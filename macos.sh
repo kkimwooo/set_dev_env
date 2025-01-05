@@ -15,6 +15,39 @@ else
     echo "✅ Homebrew가 이미 설치되어 있습니다."
 fi
 
+# 2. Homebrew 경로 설정 (Apple Silicon과 Intel Mac 모두 지원)
+echo "🔧 Homebrew PATH 설정 중..."
+if [[ -d "/opt/homebrew/bin" ]]; then
+    # Apple Silicon (M1/M2)
+    BREW_PATH="/opt/homebrew/bin"
+elif [[ -d "/usr/local/bin" ]]; then
+    # Intel Mac
+    BREW_PATH="/usr/local/bin"
+else
+    echo "❌ Homebrew 경로를 찾을 수 없습니다. 설치가 제대로 이루어지지 않았습니다."
+    exit 1
+fi
+
+# PATH 설정 추가
+if ! grep -q "$BREW_PATH" ~/.zshrc; then
+    echo "export PATH=\"$BREW_PATH:\$PATH\"" >>~/.zshrc
+    echo "✅ PATH 설정이 ~/.zshrc에 추가되었습니다."
+else
+    echo "✅ PATH 설정이 이미 존재합니다."
+fi
+
+# 환경 변수 적용
+source ~/.zshrc
+
+# brew 명령어 확인
+if ! command -v brew &>/dev/null; then
+    echo "❌ Homebrew가 설치되었지만 'brew' 명령어를 인식하지 못합니다. PATH 설정을 확인하세요."
+    exit 1
+else
+    echo "✅ Homebrew가 정상적으로 설치되었습니다: $(brew --version)"
+fi
+
+
 # 2. Git 설치
 echo "🔧 Git 설치 중..."
 brew install git
